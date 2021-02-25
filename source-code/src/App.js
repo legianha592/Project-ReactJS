@@ -2,87 +2,88 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import Tasks from './components/Tasks'
-import AddTask from './components/AddTask'
+import Records from './components/Records'
+import AddRecord from './components/AddRecord'
 import About from './components/About'
+import { TASK_ROOT_URL } from './utils/constants';
 
 const App = () => {
-  const [showAddTask, setShowAddTask] = useState(false)
-  const [tasks, setTasks] = useState([])
+  const [showAddRecord, setShowAddRecord] = useState(false)
+  const [records, setRecords] = useState([])
 
   useEffect(() => {
-    const getTasks = async () => {
-      const tasksFromServer = await fetchTasks()
-      setTasks(tasksFromServer)
+    const getRecords = async () => {
+      const recordsFromServer = await fetchRecords()
+      setRecords(recordsFromServer)
     }
 
-    getTasks()
+    getRecords()
   }, [])
 
-  // Fetch Tasks
-  const fetchTasks = async () => {
-    const res = await fetch('http://localhost:5000/tasks')
+  // Fetch Records
+  const fetchRecords = async () => {
+    const res = await fetch(TASK_ROOT_URL)
     const data = await res.json()
 
     return data
   }
 
-  // Fetch Task
-  const fetchTask = async (id) => {
-    const res = await fetch(`http://localhost:5000/tasks/${id}`)
+  // Fetch Record
+  const fetchRecord = async (id) => {
+    const res = await fetch(`${TASK_ROOT_URL}/${id}`)
     const data = await res.json()
 
     return data
   }
 
-  // Add Task
-  const addTask = async (task) => {
-    const res = await fetch('http://localhost:5000/tasks', {
+  // Add Record
+  const addRecord = async (record) => {
+    const res = await fetch(`${TASK_ROOT_URL}/`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(task),
+      body: JSON.stringify(record),
     })
 
     const data = await res.json()
 
-    setTasks([...tasks, data])
+    setRecords([...records, data])
 
     // const id = Math.floor(Math.random() * 10000) + 1
-    // const newTask = { id, ...task }
-    // setTasks([...tasks, newTask])
+    // const newRecord = { id, ...record }
+    // setRecords([...records, newRecord])
   }
 
-  // Delete Task
-  const deleteTask = async (id) => {
-    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+  // Delete Record
+  const deleteRecord = async (id) => {
+    const res = await fetch(`${TASK_ROOT_URL}/${id}`, {
       method: 'DELETE',
     })
     //We should control the response status to decide if we will change the state or not.
     res.status === 200
-      ? setTasks(tasks.filter((task) => task.id !== id))
-      : alert('Error Deleting This Task')
+      ? setRecords(records.filter((record) => record.id !== id))
+      : alert('Error Deleting This Record')
   }
 
   // Toggle Reminder
   const toggleReminder = async (id) => {
-    const taskToToggle = await fetchTask(id)
-    const updTask = { ...taskToToggle, reminder: !taskToToggle.reminder }
+    const recordToToggle = await fetchRecord(id)
+    const updRecord = { ...recordToToggle, reminder: !recordToToggle.reminder }
 
-    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+    const res = await fetch(`${TASK_ROOT_URL}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(updTask),
+      body: JSON.stringify(updRecord),
     })
 
     const data = await res.json()
 
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, reminder: data.reminder } : task
+    setRecords(
+      records.map((record) =>
+        record.id === id ? { ...record, reminder: data.reminder } : record
       )
     )
   }
@@ -91,23 +92,23 @@ const App = () => {
     <Router>
       <div className='container'>
         <Header
-          onAdd={() => setShowAddTask(!showAddTask)}
-          showAdd={showAddTask}
+          onAdd={() => setShowAddRecord(!showAddRecord)}
+          showAdd={showAddRecord}
         />
         <Route
           path='/'
           exact
           render={(props) => (
             <>
-              {showAddTask && <AddTask onAdd={addTask} />}
-              {tasks.length > 0 ? (
-                <Tasks
-                  tasks={tasks}
-                  onDelete={deleteTask}
+              {showAddRecord && <AddRecord onAdd={addRecord} />}
+              {records.length > 0 ? (
+                <Records
+                  records={records}
+                  onDelete={deleteRecord}
                   onToggle={toggleReminder}
                 />
               ) : (
-                'No Tasks To Show'
+                'No Records To Show'
               )}
             </>
           )}

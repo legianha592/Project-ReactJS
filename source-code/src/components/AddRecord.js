@@ -1,15 +1,15 @@
 import { useState } from 'react'
 
-const AddTask = ({ onAdd }) => {
+const AddRecord = ({ onAdd }) => {
   const [text, setText] = useState('')
   const [day, setDay] = useState('')
-  const [reminder, setReminder] = useState(false)
+  const [reminder, setReminder] = useState(true)
 
   const onSubmit = (e) => {
     e.preventDefault()
 
     if (!text) {
-      alert('Please add a task')
+      alert('Please add a record')
       return
     }
 
@@ -23,10 +23,10 @@ const AddTask = ({ onAdd }) => {
   return (
     <form className='add-form' onSubmit={onSubmit}>
       <div className='form-control'>
-        <label>Task</label>
+        <label>Record</label>
         <input
           type='text'
-          placeholder='Add Task'
+          placeholder='Add Record'
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
@@ -50,9 +50,9 @@ const AddTask = ({ onAdd }) => {
         />
       </div>
 
-      <input type='submit' value='Save Task' className='btn btn-block' />
+      <input type='submit' value='Save Record' className='btn btn-block' />
     </form>
   )
 }
 
-export default AddTask
+export default AddRecord
